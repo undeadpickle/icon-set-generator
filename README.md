@@ -25,7 +25,7 @@ A Figma plugin that generates component sets with multiple size variants from a 
 ### 2. Prepare a Test Icon
 
 1. Create or select a vector icon in your Figma file
-2. Icon must be:
+2. Icon must be:change
    - A vector, group, or frame
    - Not a raster image, section, or existing component
    - Have editable stroke
@@ -47,6 +47,7 @@ A Figma plugin that generates component sets with multiple size variants from a 
 ### 4. Expected Result
 
 The plugin will create:
+
 - A component set named after your original icon with auto layout enabled
 - 6 variants with property "Size" (16, 20, 24, 32, 40, 48)
 - Variants displayed horizontally with 16px spacing
@@ -73,6 +74,7 @@ npm run watch
 ## Files
 
 **Core Plugin**:
+
 - `manifest.json` - Plugin configuration
 - `code.ts` - Main plugin logic (TypeScript)
 - `code.js` - Compiled JavaScript (generated)
@@ -81,6 +83,7 @@ npm run watch
 - `package.json` - Node dependencies
 
 **Documentation**:
+
 - `docs/figma-api/` - Comprehensive Figma Plugin API reference
 - `.claude/memories/figma-api/` - Agent memory system (3 rotating knowledge files)
 - `.claude/agents/figma-api-expert.md` - Figma API research sub-agent
@@ -88,6 +91,7 @@ npm run watch
 ## Architecture
 
 ### Main Thread (`code.ts`)
+
 - **Real-time selection monitoring** (`figma.on('selectionchange')`)
 - Selection validation (vector/group/frame only)
 - Icon cloning and resizing (`createResizedIcon`)
@@ -97,6 +101,7 @@ npm run watch
 - Bi-directional messaging (UI ↔ Plugin)
 
 ### UI Thread (`ui.html`)
+
 - Dynamic size/stroke input grid (3-column layout)
 - Add/remove size functionality with state management
 - Real-time input validation
