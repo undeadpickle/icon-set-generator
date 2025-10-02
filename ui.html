@@ -24,6 +24,15 @@
       color: #000000;
     }
 
+    .icon-name {
+      color: #000000;
+    }
+
+    .icon-name.warning {
+      color: #f24822;
+      font-weight: 500;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -127,7 +136,7 @@
   </style>
 </head>
 <body>
-  <h2 id="title">Resize Icon</h2>
+  <h2>Name: <span id="iconName" class="icon-name">—</span></h2>
 
   <div class="grid" id="sizesGrid"></div>
 
@@ -214,14 +223,16 @@
       const msg = event.data.pluginMessage;
       if (msg.type === 'selection-status') {
         const generateBtn = document.getElementById('generateBtn');
-        const title = document.getElementById('title');
+        const iconNameSpan = document.getElementById('iconName');
 
         if (msg.hasValidSelection) {
           generateBtn.disabled = false;
-          title.textContent = `Name: ${msg.iconName}`;
+          iconNameSpan.textContent = msg.iconName;
+          iconNameSpan.classList.remove('warning');
         } else {
           generateBtn.disabled = true;
-          title.textContent = 'No valid icon selected';
+          iconNameSpan.textContent = '⚠️ No valid icon selected!';
+          iconNameSpan.classList.add('warning');
         }
       }
     };
