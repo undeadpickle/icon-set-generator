@@ -1,94 +1,60 @@
-# Figma API Memory 3
+# Figma API Memory 2
 
-**Created**: 2025-10-02T12:00:00Z
-**Category**: APIs
-**Source**: https://www.figma.com/plugin-docs/
+**Created**: 2025-10-02T12:15:00Z
+**Category**: Patterns
+**Source**: Figma Plugin API Research
 
 ## Summary
-Core Figma Plugin APIs for component creation, UI communication, and plugin structure. Essential methods and patterns for building functional plugins.
+Recursive stroke width application and component variant creation patterns. Methods for traversing node trees and applying properties to all vector children.
 
 ## Key Information
 
-### Plugin Structure (manifest.json)
-```json
-{
-  "name": "Plugin Name",
-  "id": "unique-id",
-  "api": "1.0.0",
-  "editorType": ["figma"],
-  "main": "code.js",     // Compiled JavaScript
-  "ui": "ui.html"         // Plugin UI
+### Recursive Stroke Application
+```typescript
+// Apply stroke width to all vector nodes recursively
+function applyStrokeWidth(node: SceneNode, strokeWidth: number): void {
+  // Check if node has strokeWeight property
+  if ('strokeWeight' in node) {
+    node.strokeWeight = strokeWidth;
+  }
+
+  // Recursively apply to children
+  if ('children' in node) {
+    (node as ChildrenMixin).children.forEach(child => {
+      applyStrokeWidth(child, strokeWidth);
+    });
+  }
 }
 ```
 
-### UI Communication (Message Passing)
+**When to Use**: When icons are groups or frames containing multiple vector children that all need the same stroke width.
 
-**UI to Plugin**:
-```javascript
-// In ui.html
-parent.postMessage({
-  pluginMessage: {
-    type: 'generate',
-    sizes: [16, 20, 24],
-    strokes: [1.6, 2, 2.5]
-  }
-}, '*');
-```
-
-**Plugin to UI**:
+### Component Variant Creation
 ```typescript
-// In code.ts
-figma.ui.onmessage = (msg) => {
-  if (msg.type === 'generate') {
-    const { sizes, strokes } = msg;
-    // Process...
-  }
-};
-```
-
-### Core Component APIs
-
-**Clone Node**:
-```typescript
-const cloned = sourceNode.clone();
-```
-
-**Scale Proportionally**:
-```typescript
-const scaleFactor = targetSize / node.width;
-cloned.rescale(scaleFactor);
-```
-
-**Create Component**:
-```typescript
+// Create individual components with variant naming pattern
 const component = figma.createComponent();
-component.appendChild(iconNode);
-component.name = `Size=${value}`;
+component.name = `Size=${size}`;  // Pattern: PropertyName=Value
+
+// Figma extracts variant properties from names
+const componentSet = figma.combineAsVariants(components, figma.currentPage);
+// Result: Variant property "Size" with values 16, 20, 24, etc.
 ```
 
-**Combine as Variants**:
+### Type Guards for Node Operations
 ```typescript
-const componentSet = figma.combineAsVariants(
-  [comp1, comp2, comp3],
-  figma.currentPage
-);
+// Always check if methods exist before calling
+if ('rescale' in cloned) {
+  cloned.rescale(scaleFactor);
+}
+
+if ('strokeWeight' in node) {
+  node.strokeWeight = value;
+}
 ```
 
-### Show UI
-```typescript
-figma.showUI(__html__, { width: 400, height: 300 });
-```
-
-### Plugin Lifecycle
-```typescript
-// Close plugin
-figma.closePlugin();
-
-// Show notification
-figma.notify('✅ Success!');
-```
+**Why**: Not all SceneNode types support all operations. Type guards prevent runtime errors.
 
 ## Relevant To
-- All Figma plugin development
-- Plugin UI architecture
-- Component manipulation basics
+- Stroke manipulation across complex icon structures
+- Variant property naming conventions
+- Safe node property access

@@ -33,6 +33,24 @@
       font-weight: 500;
     }
 
+    .selection-count {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .icon-list {
+      font-size: 12px;
+      color: #333;
+      margin-bottom: 12px;
+      padding-left: 16px;
+    }
+
+    .icon-list-item {
+      margin-bottom: 4px;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -136,7 +154,11 @@
   </style>
 </head>
 <body>
+  <div id="selectionCount" class="selection-count" style="display: none;"></div>
+
   <h2>Name: <span id="iconName" class="icon-name">—</span></h2>
+
+  <div id="iconList" class="icon-list" style="display: none;"></div>
 
   <div class="grid" id="sizesGrid"></div>
 
@@ -224,15 +246,42 @@
       if (msg.type === 'selection-status') {
         const generateBtn = document.getElementById('generateBtn');
         const iconNameSpan = document.getElementById('iconName');
+        const selectionCountDiv = document.getElementById('selectionCount');
+        const iconListDiv = document.getElementById('iconList');
 
         if (msg.hasValidSelection) {
           generateBtn.disabled = false;
-          iconNameSpan.textContent = msg.iconName;
           iconNameSpan.classList.remove('warning');
+
+          if (msg.count > 1) {
+            // Multiple icons selected
+            const plural = msg.count === 2 ? 'icons' : 'icons';
+            selectionCountDiv.textContent = `${msg.count} ${plural} selected`;
+            selectionCountDiv.style.display = 'block';
+
+            // Show first icon name in Name field
+            iconNameSpan.textContent = msg.iconNames[0];
+
+            // Show list of all icon names
+            iconListDiv.innerHTML = msg.iconNames.map(name =>
+              `<div class="icon-list-item">• ${name}</div>`
+            ).join('');
+            iconListDiv.style.display = 'block';
+
+          } else {
+            // Single icon selected
+            selectionCountDiv.style.display = 'none';
+            iconNameSpan.textContent = msg.iconNames[0];
+            iconListDiv.style.display = 'none';
+          }
+
         } else {
+          // No valid selection
           generateBtn.disabled = true;
           iconNameSpan.textContent = '⚠️ No valid icon selected!';
           iconNameSpan.classList.add('warning');
+          selectionCountDiv.style.display = 'none';
+          iconListDiv.style.display = 'none';
         }
       }
     };

@@ -25,7 +25,10 @@ function isValidIconNode(node: SceneNode): boolean {
 // Clone and resize (DRY utility function)
 function createResizedIcon(sourceNode: SceneNode, targetSize: number): SceneNode {
   const cloned = sourceNode.clone();
-  const scaleFactor = targetSize / sourceNode.width;
+
+  // Scale based on the larger dimension to fill square bounds
+  const maxDimension = Math.max(sourceNode.width, sourceNode.height);
+  const scaleFactor = targetSize / maxDimension;
 
   if ('rescale' in cloned) {
     cloned.rescale(scaleFactor);
@@ -47,12 +50,12 @@ function applyStrokeWidth(node: SceneNode, strokeWidth: number): void {
   }
 }
 
-// Main generation logic
-function generateComponentSet(
+// Create single component set (DRY utility function)
+function createSingleComponentSet(
   sourceNode: SceneNode,
   sizes: number[],
   strokes: number[]
-): void {
+): ComponentSetNode {
   const components: ComponentNode[] = [];
   const iconName = sourceNode.name;
 
@@ -70,14 +73,16 @@ function generateComponentSet(
     const component = figma.createComponent();
     component.appendChild(resizedIcon);
     component.name = `Size=${size}`;
-    component.resize(size, size);
+
+    // Center icon in component BEFORE resizing
+    resizedIcon.x = (size - resizedIcon.width) / 2;
+    resizedIcon.y = (size - resizedIcon.height) / 2;
+
+    // Resize component WITHOUT scaling children
+    component.resizeWithoutConstraints(size, size);
 
     // Remove fills (transparent background)
     component.fills = [];
-
-    // Center icon in component
-    resizedIcon.x = (size - resizedIcon.width) / 2;
-    resizedIcon.y = (size - resizedIcon.height) / 2;
 
     components.push(component);
   });
@@ -99,32 +104,87 @@ function generateComponentSet(
   // Remove fills from component set
   componentSet.fills = [];
 
-  // Position near original
-  componentSet.x = sourceNode.x + sourceNode.width + 100;
-  componentSet.y = sourceNode.y;
+  return componentSet;
+}
 
-  // Select the new component set
-  figma.currentPage.selection = [componentSet];
-  figma.viewport.scrollAndZoomIntoView([componentSet]);
+// Bulk generation logic
+function generateBulkComponentSets(
+  sourceNodes: SceneNode[],
+  sizes: number[],
+  strokes: number[]
+): void {
+  const componentSets: ComponentSetNode[] = [];
+  const errors: { name: string; error: string }[] = [];
 
-  figma.notify(`✅ Created component set: ${iconName}`);
+  const SPACING = 32; // 4pt grid spacing
+  const alignedX = sourceNodes[0].x; // Use first node's X for alignment
+  let currentY = sourceNodes[0].y;
+
+  // Process each node
+  for (const node of sourceNodes) {
+    try {
+      const componentSet = createSingleComponentSet(node, sizes, strokes);
+
+      // Position component set (vertical stack, aligned X)
+      componentSet.x = alignedX;
+      componentSet.y = currentY;
+
+      // Update Y for next component set
+      currentY += componentSet.height + SPACING;
+
+      componentSets.push(componentSet);
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      errors.push({ name: node.name, error: errorMessage });
+      console.error(`Failed to process "${node.name}":`, error);
+    }
+  }
+
+  // Select all generated component sets
+  if (componentSets.length > 0) {
+    figma.currentPage.selection = componentSets;
+    figma.viewport.scrollAndZoomIntoView(componentSets);
+  }
+
+  // Show result notification
+  if (errors.length === 0) {
+    const count = componentSets.length;
+    const plural = count === 1 ? 'set' : 'sets';
+    figma.notify(`✅ Generated ${count} component ${plural}`);
+  } else {
+    figma.notify(
+      `Generated ${componentSets.length} sets, ${errors.length} failed`,
+      { error: true }
+    );
+  }
+
+  // Close plugin
+  figma.closePlugin();
 }
 
 // Check selection and update UI (DRY utility function)
 function updateSelectionStatus(): void {
   const selection = figma.currentPage.selection;
 
-  if (selection.length === 1 && isValidIconNode(selection[0])) {
+  // Filter valid icon nodes
+  const validNodes = selection.filter(node => isValidIconNode(node));
+
+  if (validNodes.length > 0) {
+    const iconNames = validNodes.map(node => node.name);
+
     figma.ui.postMessage({
       type: 'selection-status',
       hasValidSelection: true,
-      iconName: selection[0].name
+      count: validNodes.length,
+      iconNames: iconNames
     });
   } else {
     figma.ui.postMessage({
       type: 'selection-status',
       hasValidSelection: false,
-      iconName: null
+      count: 0,
+      iconNames: []
     });
   }
 }
@@ -145,31 +205,16 @@ figma.ui.onmessage = (msg: PluginMessage) => {
   if (msg.type === 'generate') {
     const selection = figma.currentPage.selection;
 
+    // Filter valid icon nodes
+    const validNodes = selection.filter(node => isValidIconNode(node));
+
     // Validate selection
-    if (selection.length === 0) {
-      figma.notify('❌ Please select an icon');
+    if (validNodes.length === 0) {
+      figma.notify('❌ Please select at least one valid icon');
       return;
     }
 
-    if (selection.length > 1) {
-      figma.notify('❌ Please select only one icon');
-      return;
-    }
-
-    const selectedNode = selection[0];
-
-    if (!isValidIconNode(selectedNode)) {
-      figma.notify('❌ Selected node must be a vector, group, or frame');
-      return;
-    }
-
-    // Generate component set
-    try {
-      generateComponentSet(selectedNode, msg.sizes, msg.strokes);
-      figma.closePlugin();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      figma.notify(`❌ Error: ${errorMessage}`);
-    }
+    // Generate component sets (single or bulk)
+    generateBulkComponentSets(validNodes, msg.sizes, msg.strokes);
   }
 };

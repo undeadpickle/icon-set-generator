@@ -4,6 +4,7 @@ A Figma plugin that generates component sets with multiple size variants from a 
 
 ## Features
 
+- **Bulk generation** - Select multiple icons to create multiple component sets at once
 - **Real-time selection monitoring** - Button updates as you select/deselect icons
 - Creates component set with customizable size variants
 - Applies proportional scaling to icons
@@ -32,29 +33,38 @@ A Figma plugin that generates component sets with multiple size variants from a 
 
 ### 3. Run the Plugin
 
-1. Run **Plugins** → **Development** → **Resize Icon** (can run before or after selecting icon)
-2. Select a valid icon (if not already selected)
+1. Run **Plugins** → **Development** → **Resize Icon** (can run before or after selecting)
+2. Select one or more valid icons (if not already selected)
 3. UI displays and updates in real-time:
-   - Icon name in title (or warning if no valid selection)
+   - **Single icon**: Shows icon name in title
+   - **Multiple icons**: Shows count ("3 icons selected") and list of all icon names
+   - **No selection**: Warning message with disabled button
    - 6 default size/stroke input pairs
-   - Generate button (enabled only if valid icon selected)
+   - Generate button (enabled only if valid icon(s) selected)
 4. Customize as needed:
    - Remove sizes: Click red × button on any card
    - Add sizes: Click "+ Add Size" button (adds +8px size, +0.5px stroke)
    - Edit values: Modify size and stroke inputs directly
-5. Click **Generate Component** button (if enabled)
+5. Click **Generate Component** button
+   - **Single icon**: Creates 1 component set
+   - **Multiple icons**: Creates one component set per icon, vertically stacked with 32px spacing
 
 ### 4. Expected Result
 
-The plugin will create:
-
-- A component set named after your original icon with auto layout enabled
+**Single Icon Selected:**
+- One component set named after your original icon
+- Auto layout enabled (horizontal)
 - 6 variants with property "Size" (16, 20, 24, 32, 40, 48)
 - Variants displayed horizontally with 16px spacing
-- Icons placed directly in components (no frame wrapper)
 - Transparent background (no fills)
-- Icons are proportionally scaled (not stretched)
-- Stroke widths applied to each variant
+- Icons proportionally scaled and centered
+
+**Multiple Icons Selected:**
+- One component set per selected icon
+- Each named after its source icon
+- All component sets vertically stacked with 32px spacing
+- Same size/stroke settings applied to all
+- Notification shows count: "✅ Generated 3 component sets"
 
 ## Development
 

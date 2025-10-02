@@ -2,7 +2,7 @@
 
 **File Purpose**: This file provides guidance to Claude Code (claude.ai/code) when working in this project.
 **Last Updated**: October 2, 2025
-**Version**: 1.1
+**Version**: 1.2
 
 ---
 
@@ -32,11 +32,12 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
 
 ## User Flow
 
-1. User selects a vector icon in Figma
-2. User opens the "Resize Icon" plugin (can be opened before or after selecting icon)
+1. User selects one or more vector icons in Figma
+2. User opens the "Resize Icon" plugin (can be opened before or after selecting)
 3. Plugin validates selection in real-time and displays:
-   - Icon name in title (if valid selection)
-   - Warning message in title (if no/invalid selection)
+   - **Single icon**: Shows icon name (e.g., "Name: Icon / Lock")
+   - **Multiple icons**: Shows count ("3 icons selected") and list of all icon names
+   - **No/invalid selection**: Warning message "⚠️ No valid icon selected!"
    - Generate button (enabled/disabled based on current selection)
    - Updates automatically when user selects/deselects icons
    - Grid of size thumbnails with default values:
@@ -53,13 +54,16 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
    - **Edit stroke values**: Decimals allowed
    - Minimum 1 size required (cannot remove last size)
 5. User clicks "Generate Component" button
-6. Plugin generates the component with variants
+6. Plugin generates component(s):
+   - **Single icon**: Creates 1 component set
+   - **Multiple icons**: Creates one component set per icon, vertically stacked with 32px spacing
+   - All use the same size/stroke settings from the plugin UI
 
 ---
 
 ## Output Requirements
 
-**Generated Component Set**:
+**Generated Component Set(s)**:
 - Variant property name: "Size"
 - Variant values: numbers only (16, 20, 24, 32, etc.)
 - Component name: matches the original icon layer name
@@ -72,6 +76,13 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
 - Icons are vector duplicates of the original
 - Each icon centered within its component bounds
 - Custom stroke width applied per variant
+
+**Bulk Generation** (Multiple Icons):
+- One component set created per selected icon
+- Component sets positioned vertically with 32px spacing (4pt grid)
+- All component sets use identical size/stroke configuration
+- All generated sets selected and visible in viewport
+- Notification displays total count (e.g., "✅ Generated 3 component sets")
 
 **Screenshot Reference**: docs/screenshots/Screenshot 2025-10-02 at 11.33.21 AM.png
 
