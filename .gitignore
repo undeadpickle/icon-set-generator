@@ -1,0 +1,14 @@
+# Node
+node_modules/
+package-lock.json
+
+# Build output
+code.js
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Resize Icon</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+      padding: 16px;
+      background: #ffffff;
+    }
+
+    h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #000000;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .size-card {
+      position: relative;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      padding: 8px;
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 16px;
+      height: 16px;
+      padding: 0;
+      background: #f24822;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-size: 10px;
+      line-height: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .remove-btn:hover {
+      background: #d63f1e;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #18a0fb;
+    }
+
+    .add-size-btn {
+      width: 100%;
+      padding: 8px;
+      background: #ffffff;
+      color: #18a0fb;
+      border: 1px dashed #18a0fb;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    .add-size-btn:hover {
+      background: #f0f9ff;
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 10px;
+      background: #18a0fb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .generate-btn:hover {
+      background: #0d8ce8;
+    }
+
+    .generate-btn:active {
+      background: #0b7dce;
+    }
+
+    .generate-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <h2 id="title">Resize Icon</h2>
+
+  <div class="grid" id="sizesGrid"></div>
+
+  <button class="add-size-btn" id="addSizeBtn">+ Add Size</button>
+  <button class="generate-btn" id="generateBtn" disabled>Generate Component</button>
+
+  <script>
+    // State - dynamic sizes and strokes
+    let sizes = [16, 20, 24, 32, 40, 48];
+    let strokes = [1.6, 2, 2.5, 3, 3.5, 4];
+
+    // Render size cards
+    function renderSizeCards() {
+      const grid = document.getElementById('sizesGrid');
+      grid.innerHTML = '';
+
+      sizes.forEach((size, index) => {
+        const card = document.createElement('div');
+        card.className = 'size-card';
+        card.innerHTML = `
+          <button class="remove-btn" data-index="${index}">×</button>
+          <label>Size (px)</label>
+          <input type="number" class="size-input" value="${size}" min="1" step="1" data-index="${index}">
+          <label>Stroke (px)</label>
+          <input type="number" class="stroke-input" value="${strokes[index]}" min="0" step="0.1" data-index="${index}">
+        `;
+        grid.appendChild(card);
+      });
+
+      // Add remove button listeners
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          removeSize(index);
+        });
+      });
+
+      // Add input change listeners to update state
+      document.querySelectorAll('.size-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          sizes[index] = parseInt(e.target.value);
+        });
+      });
+
+      document.querySelectorAll('.stroke-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          strokes[index] = parseFloat(e.target.value);
+        });
+      });
+    }
+
+    // Remove size at index
+    function removeSize(index) {
+      if (sizes.length <= 1) {
+        return; // Keep at least one size
+      }
+      sizes.splice(index, 1);
+      strokes.splice(index, 1);
+      renderSizeCards();
+    }
+
+    // Add new size
+    function addSize() {
+      // Calculate next size (increment by 8 from largest)
+      const maxSize = Math.max(...sizes);
+      const nextSize = maxSize + 8;
+
+      // Calculate next stroke (increment by 0.5 from largest)
+      const maxStroke = Math.max(...strokes);
+      const nextStroke = Math.round((maxStroke + 0.5) * 10) / 10;
+
+      sizes.push(nextSize);
+      strokes.push(nextStroke);
+      renderSizeCards();
+    }
+
+    // Handle add size button
+    document.getElementById('addSizeBtn').addEventListener('click', addSize);
+
+    // Handle messages from plugin
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (msg.type === 'selection-status') {
+        const generateBtn = document.getElementById('generateBtn');
+        const title = document.getElementById('title');
+
+        if (msg.hasValidSelection) {
+          generateBtn.disabled = false;
+          title.textContent = `Resize Icon: ${msg.iconName}`;
+        } else {
+          generateBtn.disabled = true;
+          title.textContent = 'Resize Icon (No valid icon selected)';
+        }
+      }
+    };
+
+    // Handle generate button
+    document.getElementById('generateBtn').addEventListener('click', () => {
+      parent.postMessage({
+        pluginMessage: {
+          type: 'generate',
+          sizes,
+          strokes
+        }
+      }, '*');
+    });
+
+    // Initialize
+    renderSizeCards();
+  </script>
+</body>
+</html>
