@@ -51,6 +51,23 @@ function applyStrokeWidth(node: SceneNode, strokeWidth: number): void {
   }
 }
 
+// Group single vector nodes (DRY utility function)
+function ensureGrouped(node: SceneNode): SceneNode {
+  if (node.type === 'VECTOR' && node.parent) {
+    // Preserve original name
+    const originalName = node.name;
+
+    // Group single vector nodes for better structure
+    const group = figma.group([node], node.parent);
+    group.name = originalName;
+
+    return group;
+  }
+
+  // GROUP and FRAME nodes don't need grouping, or if no parent
+  return node;
+}
+
 // Create single component set (DRY utility function)
 function createSingleComponentSet(
   sourceNode: SceneNode,
@@ -119,19 +136,22 @@ function generateBulkComponentSets(
   const componentSets: ComponentSetNode[] = [];
   const errors: { name: string; error: string }[] = [];
 
+  // Group any ungrouped vector nodes first
+  const processedNodes = sourceNodes.map(node => ensureGrouped(node));
+
   const SPACING = 32; // 4pt grid spacing
-  const alignedX = sourceNodes[0].x; // Use first node's X for alignment
-  let currentY = sourceNodes[0].y;
+  const alignedX = processedNodes[0].x; // Use first processed node's X for alignment
+  let currentY = processedNodes[0].y;
 
   // Process each node
-  for (const node of sourceNodes) {
+  for (const node of processedNodes) {
     try {
       // Determine component name
       let componentName: string | undefined;
-      if (customName && sourceNodes.length > 1) {
+      if (customName && processedNodes.length > 1) {
         // Multiple icons with custom name: append index
-        componentName = `${customName}-${sourceNodes.indexOf(node) + 1}`;
-      } else if (customName && sourceNodes.length === 1) {
+        componentName = `${customName}-${processedNodes.indexOf(node) + 1}`;
+      } else if (customName && processedNodes.length === 1) {
         // Single icon with custom name
         componentName = customName;
       }
