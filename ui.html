@@ -1,395 +1,406 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>Resize Icon</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <title>Resize Icon</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 12px;
-      padding: 16px;
-      background: #ffffff;
-    }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        font-size: 12px;
+        padding: 16px;
+        background: #ffffff;
+      }
 
-    h2 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: #000000;
-    }
+      h2 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: #000000;
+      }
 
-    .icon-name {
-      color: #000000;
-    }
+      .icon-name {
+        color: #000000;
+      }
 
-    .icon-name.warning {
-      color: #f24822;
-      font-weight: 500;
-    }
+      .icon-name.warning {
+        color: #f24822;
+        font-weight: 500;
+      }
 
-    .selection-count {
-      font-size: 11px;
-      color: #666;
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
+      .selection-count {
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
 
-    .icon-list {
-      font-size: 12px;
-      color: #333;
-      margin-bottom: 12px;
-      padding-left: 16px;
-    }
+      .icon-list {
+        font-size: 12px;
+        color: #333;
+        margin-bottom: 12px;
+        padding-left: 16px;
+      }
 
-    .icon-list-item {
-      margin-bottom: 4px;
-    }
+      .icon-list-item {
+        margin-bottom: 4px;
+      }
 
-    .rename-section {
-      margin-bottom: 16px;
-    }
+      .rename-section {
+        margin-bottom: 16px;
+      }
 
-    .rename-label {
-      display: block;
-      font-size: 11px;
-      color: #666;
-      margin-bottom: 4px;
-      font-weight: 500;
-    }
+      .rename-label {
+        display: block;
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 4px;
+        font-weight: 500;
+      }
 
-    .rename-input {
-      width: 100%;
-      padding: 6px 8px;
-      border: 1px solid #e5e5e5;
-      border-radius: 4px;
-      font-size: 12px;
-      margin-bottom: 4px;
-    }
+      .rename-input {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
 
-    .rename-input:focus {
-      outline: none;
-      border-color: #18a0fb;
-    }
+      .rename-input:focus {
+        outline: none;
+        border-color: #18a0fb;
+      }
 
-    .rename-input:disabled {
-      background: #f5f5f5;
-      color: #999;
-      cursor: not-allowed;
-    }
+      .rename-input:disabled {
+        background: #f5f5f5;
+        color: #999;
+        cursor: not-allowed;
+      }
 
-    .rename-helper {
-      font-size: 10px;
-      color: #999;
-      font-style: italic;
-    }
+      .rename-helper {
+        font-size: 10px;
+        color: #999;
+        font-style: italic;
+      }
 
-    .delete-option {
-      display: block;
-      margin-bottom: 16px;
-      cursor: pointer;
-      user-select: none;
-      line-height: 18px;
-    }
+      .delete-option {
+        display: block;
+        margin-bottom: 16px;
+        cursor: pointer;
+        user-select: none;
+        line-height: 18px;
+      }
 
-    .delete-checkbox {
-      display: inline-block;
-      margin: 0 8px 0 0;
-      padding: 0;
-      vertical-align: middle;
-      width: 14px;
-      height: 14px;
-    }
+      .delete-checkbox {
+        display: inline-block;
+        margin: 0 4px 0 0;
+        padding: 0;
+        vertical-align: middle;
+        width: 14px;
+        height: 14px;
+      }
 
-    .delete-label {
-      display: inline-block;
-      font-size: 12px;
-      color: #333;
-      vertical-align: middle;
-      line-height: 18px;
-    }
+      .delete-label {
+        display: inline-block;
+        font-size: 12px;
+        color: #333;
+        vertical-align: middle;
+        line-height: 18px;
+      }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 12px;
-    }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+      }
 
-    .size-card {
-      position: relative;
-      border: 1px solid #e5e5e5;
-      border-radius: 4px;
-      padding: 8px;
-    }
+      .size-card {
+        position: relative;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        padding: 8px;
+      }
 
-    .remove-btn {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      width: 16px;
-      height: 16px;
-      padding: 0;
-      background: #f24822;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      font-size: 10px;
-      line-height: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+      .remove-btn {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 16px;
+        height: 16px;
+        padding: 0;
+        background: #f24822;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        font-size: 10px;
+        line-height: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-    .remove-btn:hover {
-      background: #d63f1e;
-    }
+      .remove-btn:hover {
+        background: #d63f1e;
+      }
 
-    label {
-      display: block;
-      font-size: 11px;
-      color: #666;
-      margin-bottom: 4px;
-    }
+      label {
+        display: block;
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 4px;
+      }
 
-    input {
-      width: 100%;
-      padding: 6px 8px;
-      border: 1px solid #e5e5e5;
-      border-radius: 4px;
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
+      input {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-bottom: 6px;
+      }
 
-    input:focus {
-      outline: none;
-      border-color: #18a0fb;
-    }
+      input:focus {
+        outline: none;
+        border-color: #18a0fb;
+      }
 
-    .add-size-btn {
-      width: 100%;
-      padding: 8px;
-      background: #ffffff;
-      color: #18a0fb;
-      border: 1px dashed #18a0fb;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 12px;
-    }
+      .add-size-btn {
+        width: 100%;
+        padding: 8px;
+        background: #ffffff;
+        color: #18a0fb;
+        border: 1px dashed #18a0fb;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 12px;
+      }
 
-    .add-size-btn:hover {
-      background: #f0f9ff;
-    }
+      .add-size-btn:hover {
+        background: #f0f9ff;
+      }
 
-    .generate-btn {
-      width: 100%;
-      padding: 10px;
-      background: #18a0fb;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
+      .generate-btn {
+        width: 100%;
+        padding: 10px;
+        background: #18a0fb;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
 
-    .generate-btn:hover {
-      background: #0d8ce8;
-    }
+      .generate-btn:hover {
+        background: #0d8ce8;
+      }
 
-    .generate-btn:active {
-      background: #0b7dce;
-    }
+      .generate-btn:active {
+        background: #0b7dce;
+      }
 
-    .generate-btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-  </style>
-</head>
-<body>
-  <div id="selectionCount" class="selection-count" style="display: none;"></div>
+      .generate-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="selectionCount"
+      class="selection-count"
+      style="display: none"
+    ></div>
 
-  <div class="rename-section">
-    <label class="rename-label" for="renameInput">Component Name (optional)</label>
-    <input
-      type="text"
-      id="renameInput"
-      class="rename-input"
-      placeholder="—"
-      disabled
-    />
-    <div id="renameHelper" class="rename-helper" style="display: none;"></div>
-  </div>
+    <div class="rename-section">
+      <label class="rename-label" for="renameInput"
+        >Component Name (optional)</label
+      >
+      <input
+        type="text"
+        id="renameInput"
+        class="rename-input"
+        placeholder="—"
+        disabled
+      />
+      <div id="renameHelper" class="rename-helper" style="display: none"></div>
+    </div>
 
-  <div id="iconList" class="icon-list" style="display: none;"></div>
+    <div id="iconList" class="icon-list" style="display: none"></div>
 
-  <label class="delete-option">
-    <input type="checkbox" id="deleteCheckbox" class="delete-checkbox" />
-    <span class="delete-label">Delete original icons after generation</span>
-  </label>
+    <label class="delete-option">
+      <input type="checkbox" id="deleteCheckbox" class="delete-checkbox" />
+      <span class="delete-label">Delete original icons after generation</span>
+    </label>
 
-  <div class="grid" id="sizesGrid"></div>
+    <div class="grid" id="sizesGrid"></div>
 
-  <button class="add-size-btn" id="addSizeBtn">+ Add Size</button>
-  <button class="generate-btn" id="generateBtn" disabled>Generate Component</button>
+    <button class="add-size-btn" id="addSizeBtn">+ Add Size</button>
+    <button class="generate-btn" id="generateBtn" disabled>
+      Generate Component
+    </button>
 
-  <script>
-    // State - dynamic sizes and strokes
-    let sizes = [16, 20, 24, 32, 40, 48];
-    let strokes = [1.6, 2, 2.5, 3, 3.5, 4];
+    <script>
+      // State - dynamic sizes and strokes
+      let sizes = [16, 20, 24, 32, 40, 48];
+      let strokes = [1.6, 2, 2.5, 3, 3.5, 4];
 
-    // Render size cards
-    function renderSizeCards() {
-      const grid = document.getElementById('sizesGrid');
-      grid.innerHTML = '';
+      // Render size cards
+      function renderSizeCards() {
+        const grid = document.getElementById("sizesGrid");
+        grid.innerHTML = "";
 
-      sizes.forEach((size, index) => {
-        const card = document.createElement('div');
-        card.className = 'size-card';
-        card.innerHTML = `
+        sizes.forEach((size, index) => {
+          const card = document.createElement("div");
+          card.className = "size-card";
+          card.innerHTML = `
           <button class="remove-btn" data-index="${index}">×</button>
           <label>Size (px)</label>
           <input type="number" class="size-input" value="${size}" min="1" step="1" data-index="${index}">
           <label>Stroke (px)</label>
           <input type="number" class="stroke-input" value="${strokes[index]}" min="0" step="0.1" data-index="${index}">
         `;
-        grid.appendChild(card);
-      });
-
-      // Add remove button listeners
-      document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const index = parseInt(e.target.dataset.index);
-          removeSize(index);
+          grid.appendChild(card);
         });
-      });
 
-      // Add input change listeners to update state
-      document.querySelectorAll('.size-input').forEach(input => {
-        input.addEventListener('change', (e) => {
-          const index = parseInt(e.target.dataset.index);
-          sizes[index] = parseInt(e.target.value);
+        // Add remove button listeners
+        document.querySelectorAll(".remove-btn").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            const index = parseInt(e.target.dataset.index);
+            removeSize(index);
+          });
         });
-      });
 
-      document.querySelectorAll('.stroke-input').forEach(input => {
-        input.addEventListener('change', (e) => {
-          const index = parseInt(e.target.dataset.index);
-          strokes[index] = parseFloat(e.target.value);
+        // Add input change listeners to update state
+        document.querySelectorAll(".size-input").forEach((input) => {
+          input.addEventListener("change", (e) => {
+            const index = parseInt(e.target.dataset.index);
+            sizes[index] = parseInt(e.target.value);
+          });
         });
-      });
-    }
 
-    // Remove size at index
-    function removeSize(index) {
-      if (sizes.length <= 1) {
-        return; // Keep at least one size
+        document.querySelectorAll(".stroke-input").forEach((input) => {
+          input.addEventListener("change", (e) => {
+            const index = parseInt(e.target.dataset.index);
+            strokes[index] = parseFloat(e.target.value);
+          });
+        });
       }
-      sizes.splice(index, 1);
-      strokes.splice(index, 1);
-      renderSizeCards();
-    }
 
-    // Add new size
-    function addSize() {
-      // Calculate next size (increment by 8 from largest)
-      const maxSize = Math.max(...sizes);
-      const nextSize = maxSize + 8;
+      // Remove size at index
+      function removeSize(index) {
+        if (sizes.length <= 1) {
+          return; // Keep at least one size
+        }
+        sizes.splice(index, 1);
+        strokes.splice(index, 1);
+        renderSizeCards();
+      }
 
-      // Calculate next stroke (increment by 0.5 from largest)
-      const maxStroke = Math.max(...strokes);
-      const nextStroke = Math.round((maxStroke + 0.5) * 10) / 10;
+      // Add new size
+      function addSize() {
+        // Calculate next size (increment by 8 from largest)
+        const maxSize = Math.max(...sizes);
+        const nextSize = maxSize + 8;
 
-      sizes.push(nextSize);
-      strokes.push(nextStroke);
-      renderSizeCards();
-    }
+        // Calculate next stroke (increment by 0.5 from largest)
+        const maxStroke = Math.max(...strokes);
+        const nextStroke = Math.round((maxStroke + 0.5) * 10) / 10;
 
-    // Handle add size button
-    document.getElementById('addSizeBtn').addEventListener('click', addSize);
+        sizes.push(nextSize);
+        strokes.push(nextStroke);
+        renderSizeCards();
+      }
 
-    // Handle messages from plugin
-    window.onmessage = (event) => {
-      const msg = event.data.pluginMessage;
-      if (msg.type === 'selection-status') {
-        const generateBtn = document.getElementById('generateBtn');
-        const renameInput = document.getElementById('renameInput');
-        const renameHelper = document.getElementById('renameHelper');
-        const selectionCountDiv = document.getElementById('selectionCount');
-        const iconListDiv = document.getElementById('iconList');
+      // Handle add size button
+      document.getElementById("addSizeBtn").addEventListener("click", addSize);
 
-        if (msg.hasValidSelection) {
-          generateBtn.disabled = false;
-          renameInput.disabled = false;
+      // Handle messages from plugin
+      window.onmessage = (event) => {
+        const msg = event.data.pluginMessage;
+        if (msg.type === "selection-status") {
+          const generateBtn = document.getElementById("generateBtn");
+          const renameInput = document.getElementById("renameInput");
+          const renameHelper = document.getElementById("renameHelper");
+          const selectionCountDiv = document.getElementById("selectionCount");
+          const iconListDiv = document.getElementById("iconList");
 
-          if (msg.count > 1) {
-            // Multiple icons selected
-            const plural = msg.count === 2 ? 'icons' : 'icons';
-            selectionCountDiv.textContent = `${msg.count} ${plural} selected`;
-            selectionCountDiv.style.display = 'block';
+          if (msg.hasValidSelection) {
+            generateBtn.disabled = false;
+            renameInput.disabled = false;
 
-            // Set placeholder to first icon name
-            renameInput.placeholder = msg.iconNames[0];
+            if (msg.count > 1) {
+              // Multiple icons selected
+              const plural = msg.count === 2 ? "icons" : "icons";
+              selectionCountDiv.textContent = `${msg.count} ${plural} selected`;
+              selectionCountDiv.style.display = "block";
 
-            // Show helper text for multiple icons
-            renameHelper.textContent = '(Will append -1, -2, etc. for multiple icons)';
-            renameHelper.style.display = 'block';
+              // Set placeholder to first icon name
+              renameInput.placeholder = msg.iconNames[0];
 
-            // Show list of all icon names
-            iconListDiv.innerHTML = msg.iconNames.map(name =>
-              `<div class="icon-list-item">• ${name}</div>`
-            ).join('');
-            iconListDiv.style.display = 'block';
+              // Show helper text for multiple icons
+              renameHelper.textContent =
+                "(Will append -1, -2, etc. for multiple icons)";
+              renameHelper.style.display = "block";
 
+              // Show list of all icon names
+              iconListDiv.innerHTML = msg.iconNames
+                .map((name) => `<div class="icon-list-item">• ${name}</div>`)
+                .join("");
+              iconListDiv.style.display = "block";
+            } else {
+              // Single icon selected
+              selectionCountDiv.style.display = "none";
+              renameInput.placeholder = msg.iconNames[0];
+              renameHelper.style.display = "none";
+              iconListDiv.style.display = "none";
+            }
           } else {
-            // Single icon selected
-            selectionCountDiv.style.display = 'none';
-            renameInput.placeholder = msg.iconNames[0];
-            renameHelper.style.display = 'none';
-            iconListDiv.style.display = 'none';
+            // No valid selection
+            generateBtn.disabled = true;
+            renameInput.disabled = true;
+            renameInput.placeholder = "⚠️ No valid icon selected!";
+            renameHelper.style.display = "none";
+            selectionCountDiv.style.display = "none";
+            iconListDiv.style.display = "none";
           }
-
-        } else {
-          // No valid selection
-          generateBtn.disabled = true;
-          renameInput.disabled = true;
-          renameInput.placeholder = '⚠️ No valid icon selected!';
-          renameHelper.style.display = 'none';
-          selectionCountDiv.style.display = 'none';
-          iconListDiv.style.display = 'none';
         }
-      }
-    };
+      };
 
-    // Handle generate button
-    document.getElementById('generateBtn').addEventListener('click', () => {
-      const renameInput = document.getElementById('renameInput');
-      const deleteCheckbox = document.getElementById('deleteCheckbox');
-      const customName = renameInput.value.trim() || undefined;
+      // Handle generate button
+      document.getElementById("generateBtn").addEventListener("click", () => {
+        const renameInput = document.getElementById("renameInput");
+        const deleteCheckbox = document.getElementById("deleteCheckbox");
+        const customName = renameInput.value.trim() || undefined;
 
-      parent.postMessage({
-        pluginMessage: {
-          type: 'generate',
-          sizes,
-          strokes,
-          customName,
-          deleteOriginals: deleteCheckbox.checked
-        }
-      }, '*');
-    });
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "generate",
+              sizes,
+              strokes,
+              customName,
+              deleteOriginals: deleteCheckbox.checked,
+            },
+          },
+          "*"
+        );
+      });
 
-    // Initialize
-    renderSizeCards();
-  </script>
-</body>
+      // Initialize
+      renderSizeCards();
+    </script>
+  </body>
 </html>
