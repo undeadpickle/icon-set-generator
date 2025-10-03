@@ -1,60 +1,66 @@
-# Figma API Memory 2
+# Figma API Memory 3
 
-**Created**: 2025-10-02T12:15:00Z
-**Category**: Patterns
-**Source**: Figma Plugin API Research
+**Created**: 2025-10-02T12:45:00Z
+**Category**: Solutions
+**Source**: Icon Set Generator Plugin Implementation
 
 ## Summary
-Recursive stroke width application and component variant creation patterns. Methods for traversing node trees and applying properties to all vector children.
+
+Successfully implemented component set generation with auto layout, transparent backgrounds, and proper icon scaling. Key learnings about component structure and layout modes.
 
 ## Key Information
 
-### Recursive Stroke Application
+### Component Set with Auto Layout
+
 ```typescript
-// Apply stroke width to all vector nodes recursively
-function applyStrokeWidth(node: SceneNode, strokeWidth: number): void {
-  // Check if node has strokeWeight property
-  if ('strokeWeight' in node) {
-    node.strokeWeight = strokeWidth;
-  }
-
-  // Recursively apply to children
-  if ('children' in node) {
-    (node as ChildrenMixin).children.forEach(child => {
-      applyStrokeWidth(child, strokeWidth);
-    });
-  }
-}
-```
-
-**When to Use**: When icons are groups or frames containing multiple vector children that all need the same stroke width.
-
-### Component Variant Creation
-```typescript
-// Create individual components with variant naming pattern
-const component = figma.createComponent();
-component.name = `Size=${size}`;  // Pattern: PropertyName=Value
-
-// Figma extracts variant properties from names
+// After combining into component set, enable horizontal auto layout
 const componentSet = figma.combineAsVariants(components, figma.currentPage);
-// Result: Variant property "Size" with values 16, 20, 24, etc.
+
+// Configure auto layout
+componentSet.layoutMode = "HORIZONTAL";
+componentSet.primaryAxisSizingMode = "AUTO";
+componentSet.counterAxisSizingMode = "AUTO";
+componentSet.itemSpacing = 16;
+componentSet.paddingLeft = 16;
+componentSet.paddingRight = 16;
+componentSet.paddingTop = 16;
+componentSet.paddingBottom = 16;
+
+// Remove fills for transparency
+componentSet.fills = [];
 ```
 
-### Type Guards for Node Operations
+### Transparent Components (No Fills)
+
 ```typescript
-// Always check if methods exist before calling
-if ('rescale' in cloned) {
-  cloned.rescale(scaleFactor);
-}
+// Components need fills = [] for transparent background
+const component = figma.createComponent();
+component.fills = []; // Critical for transparent background
 
-if ('strokeWeight' in node) {
-  node.strokeWeight = value;
-}
+// Don't wrap in frames - place icons directly
+component.appendChild(resizedIcon);
 ```
 
-**Why**: Not all SceneNode types support all operations. Type guards prevent runtime errors.
+### Icon Scaling Pattern
+
+```typescript
+function createResizedIcon(
+  sourceNode: SceneNode,
+  targetSize: number
+): SceneNode {
+  const cloned = sourceNode.clone();
+  const scaleFactor = targetSize / sourceNode.width;
+
+  if ("rescale" in cloned) {
+    cloned.rescale(scaleFactor); // Maintains aspect ratio
+  }
+
+  return cloned;
+}
+```
 
 ## Relevant To
-- Stroke manipulation across complex icon structures
-- Variant property naming conventions
-- Safe node property access
+
+- Icon Set Generator component creation
+- Any plugin needing transparent component sets with auto layout
+- Proportional icon scaling without frames

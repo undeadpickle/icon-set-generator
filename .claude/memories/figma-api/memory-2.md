@@ -1,58 +1,116 @@
-# Figma API Memory 1
+# Figma API Memory 2
 
-**Created**: 2025-10-02T12:45:00Z
-**Category**: Solutions
-**Source**: Icon Set Generator Plugin Implementation
+**Created**: 2025-10-02T14:30:00Z
+**Category**: Patterns
+**Source**: Icon Set Generator Bulk Generation Implementation
 
 ## Summary
-Successfully implemented component set generation with auto layout, transparent backgrounds, and proper icon scaling. Key learnings about component structure and layout modes.
+
+Implemented bulk component set generation with vertical stacking, error handling, and UI feedback for multiple icon selections. Learned patterns for processing multiple nodes, positioning, and user feedback.
 
 ## Key Information
 
-### Component Set with Auto Layout
+### Bulk Generation Pattern
+
 ```typescript
-// After combining into component set, enable horizontal auto layout
-const componentSet = figma.combineAsVariants(components, figma.currentPage);
+// Filter valid nodes before processing
+const validNodes = selection.filter((node) => isValidIconNode(node));
 
-// Configure auto layout
-componentSet.layoutMode = 'HORIZONTAL';
-componentSet.primaryAxisSizingMode = 'AUTO';
-componentSet.counterAxisSizingMode = 'AUTO';
-componentSet.itemSpacing = 16;
-componentSet.paddingLeft = 16;
-componentSet.paddingRight = 16;
-componentSet.paddingTop = 16;
-componentSet.paddingBottom = 16;
+// Process each node with error handling (continue on error)
+function generateBulkComponentSets(
+  sourceNodes: SceneNode[],
+  sizes: number[],
+  strokes: number[]
+): void {
+  const componentSets: ComponentSetNode[] = [];
+  const errors: { name: string; error: string }[] = [];
 
-// Remove fills for transparency
-componentSet.fills = [];
-```
+  const SPACING = 64; // 8pt grid spacing
+  let currentY = sourceNodes[0].y;
 
-### Transparent Components (No Fills)
-```typescript
-// Components need fills = [] for transparent background
-const component = figma.createComponent();
-component.fills = [];  // Critical for transparent background
+  for (const node of sourceNodes) {
+    try {
+      const componentSet = createSingleComponentSet(node, sizes, strokes);
 
-// Don't wrap in frames - place icons directly
-component.appendChild(resizedIcon);
-```
+      // Position component set (vertical stack)
+      componentSet.x = node.x;
+      componentSet.y = currentY;
 
-### Icon Scaling Pattern
-```typescript
-function createResizedIcon(sourceNode: SceneNode, targetSize: number): SceneNode {
-  const cloned = sourceNode.clone();
-  const scaleFactor = targetSize / sourceNode.width;
+      // Update Y for next component set
+      currentY += componentSet.height + SPACING;
 
-  if ('rescale' in cloned) {
-    cloned.rescale(scaleFactor);  // Maintains aspect ratio
+      componentSets.push(componentSet);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      errors.push({ name: node.name, error: errorMessage });
+    }
   }
 
-  return cloned;
+  // Select all generated component sets
+  if (componentSets.length > 0) {
+    figma.currentPage.selection = componentSets;
+    figma.viewport.scrollAndZoomIntoView(componentSets);
+  }
 }
 ```
 
+### Selection Status for Multiple Nodes
+
+```typescript
+// Filter and send count + names array to UI
+function updateSelectionStatus(): void {
+  const selection = figma.currentPage.selection;
+  const validNodes = selection.filter((node) => isValidIconNode(node));
+
+  if (validNodes.length > 0) {
+    const iconNames = validNodes.map((node) => node.name);
+
+    figma.ui.postMessage({
+      type: "selection-status",
+      hasValidSelection: true,
+      count: validNodes.length,
+      iconNames: iconNames,
+    });
+  }
+}
+```
+
+### UI Display for Multiple Selections
+
+```javascript
+// Show count and list when multiple icons selected
+if (msg.count > 1) {
+  selectionCountDiv.textContent = `${msg.count} icons selected`;
+  selectionCountDiv.style.display = "block";
+
+  // Show list of all icon names
+  iconListDiv.innerHTML = msg.iconNames
+    .map((name) => `<div class="icon-list-item">• ${name}</div>`)
+    .join("");
+  iconListDiv.style.display = "block";
+}
+```
+
+### Vertical Stacking with 8pt Grid
+
+- Use 64px spacing (8 × 8px) for comfortable separation
+- Maintain original X coordinate for alignment
+- Increment Y by height + spacing for each component set
+- Select all generated sets and zoom viewport to fit
+
+### Error Handling Best Practices
+
+- Use try/catch per node (continue on error pattern)
+- Track both successful and failed operations
+- Log errors to console for debugging
+- Show summary notification with counts
+- Never stop batch processing due to single error
+
 ## Relevant To
-- Icon Set Generator component creation
-- Any plugin needing transparent component sets with auto layout
-- Proportional icon scaling without frames
+
+- Bulk icon component generation
+- Multi-node processing patterns
+- Vertical stacking and positioning
+- Error resilient batch operations
+- User feedback for bulk actions
