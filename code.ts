@@ -4,6 +4,7 @@ interface GenerateMessage {
   sizes: number[];
   strokes: number[];
   customName?: string;
+  deleteOriginals?: boolean;
 }
 
 type PluginMessage = GenerateMessage;
@@ -131,7 +132,8 @@ function generateBulkComponentSets(
   sourceNodes: SceneNode[],
   sizes: number[],
   strokes: number[],
-  customName?: string
+  customName?: string,
+  deleteOriginals?: boolean
 ): void {
   const componentSets: ComponentSetNode[] = [];
   const errors: { name: string; error: string }[] = [];
@@ -175,6 +177,17 @@ function generateBulkComponentSets(
     }
   }
 
+  // Delete original icons if requested
+  if (deleteOriginals && componentSets.length > 0) {
+    processedNodes.forEach(node => {
+      try {
+        node.remove();
+      } catch (error) {
+        console.error(`Failed to delete "${node.name}":`, error);
+      }
+    });
+  }
+
   // Select all generated component sets
   if (componentSets.length > 0) {
     figma.currentPage.selection = componentSets;
@@ -185,7 +198,8 @@ function generateBulkComponentSets(
   if (errors.length === 0) {
     const count = componentSets.length;
     const plural = count === 1 ? 'set' : 'sets';
-    figma.notify(`✅ Generated ${count} component ${plural}`);
+    const deleteMsg = deleteOriginals ? ' (originals deleted)' : '';
+    figma.notify(`✅ Generated ${count} component ${plural}${deleteMsg}`);
   } else {
     figma.notify(
       `Generated ${componentSets.length} sets, ${errors.length} failed`,
@@ -224,7 +238,7 @@ function updateSelectionStatus(): void {
 }
 
 // Plugin initialization
-figma.showUI(__html__, { width: 400, height: 300 });
+figma.showUI(__html__, { width: 400, height: 560 });
 
 // Send initial selection status to UI
 updateSelectionStatus();
@@ -249,6 +263,6 @@ figma.ui.onmessage = (msg: PluginMessage) => {
     }
 
     // Generate component sets (single or bulk)
-    generateBulkComponentSets(validNodes, msg.sizes, msg.strokes, msg.customName);
+    generateBulkComponentSets(validNodes, msg.sizes, msg.strokes, msg.customName, msg.deleteOriginals);
   }
 };

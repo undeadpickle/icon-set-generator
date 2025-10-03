@@ -89,6 +89,29 @@
       font-style: italic;
     }
 
+    .delete-option {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-start;
+    }
+
+    .delete-checkbox {
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .delete-label {
+      font-size: 12px;
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+      margin: 0;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -207,6 +230,11 @@
   </div>
 
   <div id="iconList" class="icon-list" style="display: none;"></div>
+
+  <div class="delete-option">
+    <input type="checkbox" id="deleteCheckbox" class="delete-checkbox" />
+    <label for="deleteCheckbox" class="delete-label">Delete original icons after generation</label>
+  </div>
 
   <div class="grid" id="sizesGrid"></div>
 
@@ -344,6 +372,7 @@
     // Handle generate button
     document.getElementById('generateBtn').addEventListener('click', () => {
       const renameInput = document.getElementById('renameInput');
+      const deleteCheckbox = document.getElementById('deleteCheckbox');
       const customName = renameInput.value.trim() || undefined;
 
       parent.postMessage({
@@ -351,7 +380,8 @@
           type: 'generate',
           sizes,
           strokes,
-          customName
+          customName,
+          deleteOriginals: deleteCheckbox.checked
         }
       }, '*');
     });

@@ -5,6 +5,9 @@ A Figma plugin that generates component sets with multiple size variants from a 
 ## Features
 
 - **Bulk generation** - Select multiple icons to create multiple component sets at once
+- **Custom naming** - Rename components via optional text input (appends -1, -2 for multiple icons)
+- **Auto-grouping** - Automatically groups VECTOR nodes before generation for better structure
+- **Delete originals** - Optional checkbox to remove original icons after component generation
 - **Real-time selection monitoring** - Button updates as you select/deselect icons
 - Creates component set with customizable size variants
 - Applies proportional scaling to icons
@@ -21,7 +24,7 @@ A Figma plugin that generates component sets with multiple size variants from a 
 1. Open Figma desktop app
 2. Go to **Plugins** → **Development** → **Import plugin from manifest...**
 3. Select the `manifest.json` file in this directory
-4. Plugin will appear in **Plugins** → **Development** → **Resize Icon**
+4. Plugin will appear in **Plugins** → **Development** → **Icon Set Generator**
 
 ### 2. Prepare a Test Icon
 
@@ -33,38 +36,49 @@ A Figma plugin that generates component sets with multiple size variants from a 
 
 ### 3. Run the Plugin
 
-1. Run **Plugins** → **Development** → **Resize Icon** (can run before or after selecting)
+1. Run **Plugins** → **Development** → **Icon Set Generator** (can run before or after selecting)
 2. Select one or more valid icons (if not already selected)
 3. UI displays and updates in real-time:
-   - **Single icon**: Shows icon name in title
+   - **Component Name (optional)**: Text input to rename components (disabled if no selection)
+     - Single icon: Enter custom name (e.g., "MyIcon")
+     - Multiple icons: Enter base name, plugin appends -1, -2, etc. (e.g., "Icon-1", "Icon-2")
+   - **Delete checkbox**: "Delete original icons after generation"
    - **Multiple icons**: Shows count ("3 icons selected") and list of all icon names
    - **No selection**: Warning message with disabled button
    - 6 default size/stroke input pairs
    - Generate button (enabled only if valid icon(s) selected)
 4. Customize as needed:
-   - Remove sizes: Click red × button on any card
-   - Add sizes: Click "+ Add Size" button (adds +8px size, +0.5px stroke)
-   - Edit values: Modify size and stroke inputs directly
+   - **Rename**: Type custom component name (leave blank to use original names)
+   - **Delete originals**: Check box to remove original icons after generation
+   - **Remove sizes**: Click red × button on any card
+   - **Add sizes**: Click "+ Add Size" button (adds +8px size, +0.5px stroke)
+   - **Edit values**: Modify size and stroke inputs directly
 5. Click **Generate Component** button
    - **Single icon**: Creates 1 component set
    - **Multiple icons**: Creates one component set per icon, vertically stacked with 32px spacing
+   - **VECTOR nodes**: Automatically grouped before generation (preserves original name)
+   - **Delete enabled**: Original icons removed after successful generation
 
 ### 4. Expected Result
 
 **Single Icon Selected:**
-- One component set named after your original icon
+- One component set named after your original icon (or custom name if provided)
 - Auto layout enabled (horizontal)
 - 6 variants with property "Size" (16, 20, 24, 32, 40, 48)
 - Variants displayed horizontally with 16px spacing
 - Transparent background (no fills)
 - Icons proportionally scaled and centered
+- VECTOR nodes are automatically grouped (preserves name)
+- Original icon optionally deleted (if checkbox enabled)
 
 **Multiple Icons Selected:**
 - One component set per selected icon
-- Each named after its source icon
+- Each named after its source icon (or custom base name + index: "Icon-1", "Icon-2", etc.)
 - All component sets vertically stacked with 32px spacing
 - Same size/stroke settings applied to all
-- Notification shows count: "✅ Generated 3 component sets"
+- VECTOR nodes automatically grouped before generation
+- Original icons optionally deleted (if checkbox enabled)
+- Notification shows count: "✅ Generated 3 component sets" or "✅ Generated 3 component sets (originals deleted)"
 
 ## Development
 
@@ -104,23 +118,31 @@ npm run watch
 
 - **Real-time selection monitoring** (`figma.on('selectionchange')`)
 - Selection validation (vector/group/frame only)
+- **Auto-grouping** (`ensureGrouped`) - Groups VECTOR nodes, preserves GROUP/FRAME
 - Icon cloning and resizing (`createResizedIcon`)
 - Stroke width application (`applyStrokeWidth` - recursive)
+- **Custom naming** - Supports optional renaming with index appending for bulk operations
 - Component creation with transparent background
 - Component set generation with auto layout
+- **Delete originals** - Optional cleanup after successful generation
 - Bi-directional messaging (UI ↔ Plugin)
 
 ### UI Thread (`ui.html`)
 
+- **Component name input** - Optional text field for custom naming
+- **Delete checkbox** - Option to remove original icons after generation
 - Dynamic size/stroke input grid (3-column layout)
 - Add/remove size functionality with state management
 - Real-time input validation
+- Real-time selection status updates
 - Message passing to main thread
 - Minimum 1 size constraint
+- Plugin dimensions: 400px × 560px
 
 ## DRY Principles Applied
 
-- **Reusable functions**: `createResizedIcon()` and `applyStrokeWidth()` used for all sizes
-- **Type-safe messaging**: Shared interface for UI-to-plugin communication
+- **Reusable functions**: `createResizedIcon()`, `applyStrokeWidth()`, and `ensureGrouped()` used for all operations
+- **Type-safe messaging**: Shared interface for UI-to-plugin communication (with optional fields for custom name and delete)
 - **Template rendering**: Single card template for all size inputs
+- **Bulk operation pattern**: Single function handles both individual and bulk generation with error resilience
 - **Configuration**: Default values in constants

@@ -2,7 +2,7 @@
 
 **File Purpose**: This file provides guidance to Claude Code (claude.ai/code) when working in this project.
 **Last Updated**: October 2, 2025
-**Version**: 1.2
+**Version**: 1.3
 
 ---
 
@@ -33,11 +33,14 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
 ## User Flow
 
 1. User selects one or more vector icons in Figma
-2. User opens the "Resize Icon" plugin (can be opened before or after selecting)
+2. User opens the "Icon Set Generator" plugin (can be opened before or after selecting)
 3. Plugin validates selection in real-time and displays:
-   - **Single icon**: Shows icon name (e.g., "Name: Icon / Lock")
+   - **Component Name (optional)**: Text input for custom naming (disabled if no selection)
+     - Single icon: Enter custom name (leaves blank uses original name)
+     - Multiple icons: Enter base name, auto-appends -1, -2, etc.
+   - **Delete checkbox**: "Delete original icons after generation"
    - **Multiple icons**: Shows count ("3 icons selected") and list of all icon names
-   - **No/invalid selection**: Warning message "⚠️ No valid icon selected!"
+   - **No/invalid selection**: Warning message "⚠️ No valid icon selected!" in input placeholder
    - Generate button (enabled/disabled based on current selection)
    - Updates automatically when user selects/deselects icons
    - Grid of size thumbnails with default values:
@@ -48,6 +51,8 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
    - **40px** → stroke 3.5px
    - **48px** → stroke 4px
 4. User can:
+   - **Rename**: Type custom component name (optional)
+   - **Delete originals**: Check box to remove original icons after generation
    - **Remove a size**: Click the red × button (top-right of each card)
    - **Add a new size**: Click the "+ Add Size" button (adds next increment: +8px size, +0.5px stroke)
    - **Edit size values**: Whole numbers only
@@ -55,8 +60,10 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
    - Minimum 1 size required (cannot remove last size)
 5. User clicks "Generate Component" button
 6. Plugin generates component(s):
-   - **Single icon**: Creates 1 component set
-   - **Multiple icons**: Creates one component set per icon, vertically stacked with 32px spacing
+   - **Single icon**: Creates 1 component set (with custom name if provided)
+   - **Multiple icons**: Creates one component set per icon, vertically stacked with 32px spacing (with indexed names if custom name provided)
+   - **VECTOR nodes**: Automatically grouped before generation (preserves original name)
+   - **Delete enabled**: Removes original icons after successful generation
    - All use the same size/stroke settings from the plugin UI
 
 ---
@@ -66,16 +73,32 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
 **Generated Component Set(s)**:
 - Variant property name: "Size"
 - Variant values: numbers only (16, 20, 24, 32, etc.)
-- Component name: matches the original icon layer name
+- Component name: custom name if provided, otherwise original icon layer name
 - Auto layout: HORIZONTAL with 16px spacing and padding
 - Transparent background (no fills)
 
 **Variants**:
 - Icons placed directly in components (no frame wrapper)
-- Icons are scaled proportionally (never stretched)
+- Icons are scaled proportionally based on max dimension (never stretched)
 - Icons are vector duplicates of the original
 - Each icon centered within its component bounds
 - Custom stroke width applied per variant
+
+**Auto-Grouping** (VECTOR nodes):
+- VECTOR nodes automatically wrapped in a GROUP before generation
+- Group preserves the original VECTOR's name
+- GROUP and FRAME nodes are processed as-is (not re-grouped)
+- Idempotent operation (subsequent runs use existing groups)
+
+**Custom Naming**:
+- Single icon: Custom name replaces original name
+- Multiple icons: Custom base name + index appended (e.g., "Icon-1", "Icon-2", "Icon-3")
+- If no custom name: Original icon names are used
+
+**Delete Originals** (Optional):
+- If checkbox enabled: Original icons removed after successful generation
+- Deletion happens after all component sets are created
+- Notification includes deletion status: "✅ Generated 3 component sets (originals deleted)"
 
 **Bulk Generation** (Multiple Icons):
 - One component set created per selected icon
@@ -94,7 +117,19 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
 - **Platform**: Figma Plugin API v1.0.0
 - **Build Tool**: TypeScript Compiler (tsc)
 - **UI**: Vanilla HTML/CSS/JavaScript
+- **UI Dimensions**: 400px × 560px (no scrollbar)
 - **Dependencies**: @figma/plugin-typings
+
+## Plugin Features Summary
+
+- ✅ **Bulk generation** - Multiple component sets from multiple icons
+- ✅ **Custom naming** - Optional rename with auto-indexing for bulk
+- ✅ **Auto-grouping** - VECTOR nodes automatically grouped
+- ✅ **Delete originals** - Optional cleanup after generation
+- ✅ **Real-time selection** - Live updates as user selects/deselects
+- ✅ **Dynamic sizes** - Add/remove size variants with + and × buttons
+- ✅ **Proportional scaling** - Icons fill square bounds based on max dimension
+- ✅ **Custom strokes** - Individual stroke width per size variant
 
 ---
 
