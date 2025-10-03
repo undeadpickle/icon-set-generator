@@ -3,6 +3,7 @@ interface GenerateMessage {
   type: 'generate';
   sizes: number[];
   strokes: number[];
+  customName?: string;
 }
 
 type PluginMessage = GenerateMessage;
@@ -54,10 +55,11 @@ function applyStrokeWidth(node: SceneNode, strokeWidth: number): void {
 function createSingleComponentSet(
   sourceNode: SceneNode,
   sizes: number[],
-  strokes: number[]
+  strokes: number[],
+  customName?: string
 ): ComponentSetNode {
   const components: ComponentNode[] = [];
-  const iconName = sourceNode.name;
+  const iconName = customName || sourceNode.name;
 
   // Create component for each size
   sizes.forEach((size, index) => {
@@ -111,7 +113,8 @@ function createSingleComponentSet(
 function generateBulkComponentSets(
   sourceNodes: SceneNode[],
   sizes: number[],
-  strokes: number[]
+  strokes: number[],
+  customName?: string
 ): void {
   const componentSets: ComponentSetNode[] = [];
   const errors: { name: string; error: string }[] = [];
@@ -123,7 +126,18 @@ function generateBulkComponentSets(
   // Process each node
   for (const node of sourceNodes) {
     try {
-      const componentSet = createSingleComponentSet(node, sizes, strokes);
+      // Determine component name
+      let componentName: string | undefined;
+      if (customName && sourceNodes.length > 1) {
+        // Multiple icons with custom name: append index
+        componentName = `${customName}-${sourceNodes.indexOf(node) + 1}`;
+      } else if (customName && sourceNodes.length === 1) {
+        // Single icon with custom name
+        componentName = customName;
+      }
+      // If no custom name, componentName remains undefined and original name is used
+
+      const componentSet = createSingleComponentSet(node, sizes, strokes, componentName);
 
       // Position component set (vertical stack, aligned X)
       componentSet.x = alignedX;
@@ -215,6 +229,6 @@ figma.ui.onmessage = (msg: PluginMessage) => {
     }
 
     // Generate component sets (single or bulk)
-    generateBulkComponentSets(validNodes, msg.sizes, msg.strokes);
+    generateBulkComponentSets(validNodes, msg.sizes, msg.strokes, msg.customName);
   }
 };

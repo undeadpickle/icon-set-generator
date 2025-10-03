@@ -51,6 +51,44 @@
       margin-bottom: 4px;
     }
 
+    .rename-section {
+      margin-bottom: 16px;
+    }
+
+    .rename-label {
+      display: block;
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .rename-input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .rename-input:focus {
+      outline: none;
+      border-color: #18a0fb;
+    }
+
+    .rename-input:disabled {
+      background: #f5f5f5;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .rename-helper {
+      font-size: 10px;
+      color: #999;
+      font-style: italic;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -156,7 +194,17 @@
 <body>
   <div id="selectionCount" class="selection-count" style="display: none;"></div>
 
-  <h2>Name: <span id="iconName" class="icon-name">—</span></h2>
+  <div class="rename-section">
+    <label class="rename-label" for="renameInput">Component Name (optional)</label>
+    <input
+      type="text"
+      id="renameInput"
+      class="rename-input"
+      placeholder="—"
+      disabled
+    />
+    <div id="renameHelper" class="rename-helper" style="display: none;"></div>
+  </div>
 
   <div id="iconList" class="icon-list" style="display: none;"></div>
 
@@ -245,13 +293,14 @@
       const msg = event.data.pluginMessage;
       if (msg.type === 'selection-status') {
         const generateBtn = document.getElementById('generateBtn');
-        const iconNameSpan = document.getElementById('iconName');
+        const renameInput = document.getElementById('renameInput');
+        const renameHelper = document.getElementById('renameHelper');
         const selectionCountDiv = document.getElementById('selectionCount');
         const iconListDiv = document.getElementById('iconList');
 
         if (msg.hasValidSelection) {
           generateBtn.disabled = false;
-          iconNameSpan.classList.remove('warning');
+          renameInput.disabled = false;
 
           if (msg.count > 1) {
             // Multiple icons selected
@@ -259,8 +308,12 @@
             selectionCountDiv.textContent = `${msg.count} ${plural} selected`;
             selectionCountDiv.style.display = 'block';
 
-            // Show first icon name in Name field
-            iconNameSpan.textContent = msg.iconNames[0];
+            // Set placeholder to first icon name
+            renameInput.placeholder = msg.iconNames[0];
+
+            // Show helper text for multiple icons
+            renameHelper.textContent = '(Will append -1, -2, etc. for multiple icons)';
+            renameHelper.style.display = 'block';
 
             // Show list of all icon names
             iconListDiv.innerHTML = msg.iconNames.map(name =>
@@ -271,15 +324,17 @@
           } else {
             // Single icon selected
             selectionCountDiv.style.display = 'none';
-            iconNameSpan.textContent = msg.iconNames[0];
+            renameInput.placeholder = msg.iconNames[0];
+            renameHelper.style.display = 'none';
             iconListDiv.style.display = 'none';
           }
 
         } else {
           // No valid selection
           generateBtn.disabled = true;
-          iconNameSpan.textContent = '⚠️ No valid icon selected!';
-          iconNameSpan.classList.add('warning');
+          renameInput.disabled = true;
+          renameInput.placeholder = '⚠️ No valid icon selected!';
+          renameHelper.style.display = 'none';
           selectionCountDiv.style.display = 'none';
           iconListDiv.style.display = 'none';
         }
@@ -288,11 +343,15 @@
 
     // Handle generate button
     document.getElementById('generateBtn').addEventListener('click', () => {
+      const renameInput = document.getElementById('renameInput');
+      const customName = renameInput.value.trim() || undefined;
+
       parent.postMessage({
         pluginMessage: {
           type: 'generate',
           sizes,
-          strokes
+          strokes,
+          customName
         }
       }, '*');
     });
