@@ -19,11 +19,13 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
 ## Input Requirements
 
 **Selected Icon Must Be**:
+
 - Vector with editable stroke
 - A vector layer, group, or frame
 - Selected before running the plugin
 
 **Cannot Be**:
+
 - Raster image
 - Section
 - Component
@@ -71,6 +73,7 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
 ## Output Requirements
 
 **Generated Component Set(s)**:
+
 - Variant property name: "Size"
 - Variant values: numbers only (16, 20, 24, 32, etc.)
 - Component name: custom name if provided, otherwise original icon layer name
@@ -78,6 +81,7 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
 - Transparent background (no fills)
 
 **Variants**:
+
 - Icons placed directly in components (no frame wrapper)
 - Icons are scaled proportionally based on max dimension (never stretched)
 - Icons are vector duplicates of the original
@@ -85,29 +89,31 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
 - Custom stroke width applied per variant
 
 **Auto-Grouping** (VECTOR nodes):
+
 - VECTOR nodes automatically wrapped in a GROUP before generation
 - Group preserves the original VECTOR's name
 - GROUP and FRAME nodes are processed as-is (not re-grouped)
 - Idempotent operation (subsequent runs use existing groups)
 
 **Custom Naming**:
+
 - Single icon: Custom name replaces original name
 - Multiple icons: Custom base name + index appended (e.g., "Icon-1", "Icon-2", "Icon-3")
 - If no custom name: Original icon names are used
 
 **Delete Originals** (Optional):
+
 - If checkbox enabled: Original icons removed after successful generation
 - Deletion happens after all component sets are created
 - Notification includes deletion status: "✅ Generated 3 component sets (originals deleted)"
 
 **Bulk Generation** (Multiple Icons):
+
 - One component set created per selected icon
 - Component sets positioned vertically with 32px spacing (4pt grid)
 - All component sets use identical size/stroke configuration
 - All generated sets selected and visible in viewport
 - Notification displays total count (e.g., "✅ Generated 3 component sets")
-
-**Screenshot Reference**: docs/screenshots/Screenshot 2025-10-02 at 11.33.21 AM.png
 
 ---
 
@@ -133,21 +139,28 @@ A modern, simple, and optimized Figma plugin that generates multiple size varian
 
 ---
 
-## Sub-Agent: Figma API Expert
+## Specialized Agents
+
+### Sub-Agent: Figma API Expert
+
+**Agent Location**: `.claude/agents/figma-api-expert.md`
 
 **When to Use**: Invoke the `figma-api-expert` sub-agent for any questions about Figma Plugin API, methods, node types, or best practices.
 
 **How to Invoke**:
-- Auto-delegation: Will activate automatically for Figma API questions
-- Manual: Use the Task tool with `subagent_type: "figma-api-expert"`
+
+- The main Claude Code agent (you) auto-delegation: Will activate automatically for Figma API questions
+- Manual: Use the Task tool with `subagent_type: "figma-api-expert"` or just type something like: "use the figma api agent" along with your request.
 
 **What It Does**:
+
 - Researches official Figma Plugin API documentation
-- Maintains memory of patterns, solutions, and architectural decisions
+- Maintains memory of patterns, solutions, and architectural decisions, all stored in: `.claude/memories/figma-api`
 - Provides accurate API information with code examples and documentation references
 - Read-only access to project (cannot modify code)
 
 **Examples of Questions**:
+
 - "How do I create component variants with the Figma API?"
 - "What's the API for setting stroke widths on vector nodes?"
 - "How do I scale icons proportionally in Figma plugins?"

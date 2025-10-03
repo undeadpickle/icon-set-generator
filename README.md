@@ -62,6 +62,7 @@ A Figma plugin that generates component sets with multiple size variants from a 
 ### 4. Expected Result
 
 **Single Icon Selected:**
+
 - One component set named after your original icon (or custom name if provided)
 - Auto layout enabled (horizontal)
 - 6 variants with property "Size" (16, 20, 24, 32, 40, 48)
@@ -72,6 +73,7 @@ A Figma plugin that generates component sets with multiple size variants from a 
 - Original icon optionally deleted (if checkbox enabled)
 
 **Multiple Icons Selected:**
+
 - One component set per selected icon
 - Each named after its source icon (or custom base name + index: "Icon-1", "Icon-2", etc.)
 - All component sets vertically stacked with 32px spacing
@@ -109,7 +111,7 @@ npm run watch
 **Documentation**:
 
 - `docs/figma-api/` - Comprehensive Figma Plugin API reference
-- `.claude/memories/figma-api/` - Agent memory system (3 rotating knowledge files)
+- `.claude/memories/figma-api/` - Agent memory system (up to 6 rotating knowledge files the sub-agent can use for contextual reference)
 - `.claude/agents/figma-api-expert.md` - Figma API research sub-agent
 
 ## Architecture
