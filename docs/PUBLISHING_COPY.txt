@@ -1,0 +1,120 @@
+===========================================
+FIGMA PLUGIN PUBLISHING - COPY & PASTE
+Icon Set Generator
+===========================================
+
+Use this file during the publishing flow to copy/paste the exact text you need.
+
+-------------------------------------------
+PLUGIN NAME
+-------------------------------------------
+Icon Set Generator
+
+-------------------------------------------
+TAGLINE (under 60 characters)
+-------------------------------------------
+Transform single icons into multi-size component sets instantly
+
+-------------------------------------------
+FULL DESCRIPTION
+-------------------------------------------
+Icon Set Generator streamlines your icon workflow by converting individual vector icons into complete component sets with multiple size variants—all with a single click.
+
+✨ KEY FEATURES
+
+• Bulk Generation – Select multiple icons to create multiple component sets at once
+• Custom Sizing – Add, remove, or modify size variants (16, 20, 24, 32, 40, 48px default)
+• Smart Stroke Scaling – Automatically adjusts stroke widths for each size variant
+• Auto-Grouping – Automatically wraps vector nodes for better structure
+• Custom Naming – Rename component sets with automatic indexing for bulk operations
+• Delete Originals – Optional cleanup to remove source icons after generation
+• Real-time Selection – Live UI updates as you select/deselect icons
+
+🎯 PERFECT FOR
+
+• Icon design systems following 8pt grid
+• Creating responsive icon libraries
+• Material Design, iOS, or custom icon sets
+• Design teams maintaining consistent icon sizing
+
+🚀 HOW IT WORKS
+
+1. Select one or more vector icons in your Figma file
+2. Open the Icon Set Generator plugin
+3. Customize sizes and stroke widths (or use smart defaults)
+4. Optionally rename your component sets
+5. Click "Generate Component"
+6. Get perfectly sized component sets with horizontal auto layout
+
+📐 OUTPUT
+
+Each generated component set includes:
+• Variant property "Size" with numeric values
+• Proportionally scaled icons (never stretched)
+• Custom stroke widths per variant
+• Transparent backgrounds
+• Horizontal auto layout with 16px spacing
+
+No sign-ups, no external accounts, no fees—just a faster icon workflow.
+
+-------------------------------------------
+CATEGORY
+-------------------------------------------
+Utilities
+
+(Alternative: Productivity)
+
+-------------------------------------------
+TAGS/KEYWORDS
+-------------------------------------------
+icons, components, variants, design system, scaling, stroke, bulk, productivity, icon set, automation
+
+-------------------------------------------
+SUPPORT CONTACT
+-------------------------------------------
+[REPLACE WITH YOUR EMAIL OR GITHUB ISSUES URL]
+
+Example: support@yourdomain.com
+Example: https://github.com/yourusername/icon-set-generator/issues
+
+-------------------------------------------
+PLUGIN ICON GENERATION PROMPT
+-------------------------------------------
+Create a modern, minimalist plugin icon for "Icon Set Generator" - a Figma tool that transforms single icons into component sets with multiple sizes.
+
+Design requirements:
+- 128x128 pixels, square format
+- Transparent or subtle gradient background
+- Visual concept: Show 3-4 squares/frames of increasing size arranged horizontally, with a simple icon shape inside each
+- Color scheme: Vibrant blues and purples (Figma brand-friendly colors like #18A0FB)
+- Style: Clean, geometric, flat design with subtle shadows or gradients
+- Include visual elements suggesting: sizing, variants, or component sets
+- Should be instantly recognizable at small sizes
+- No text, just iconography
+
+Think: Figma components + size scaling + productivity tool
+
+-------------------------------------------
+SECURITY DISCLOSURE (if asked)
+-------------------------------------------
+This plugin does not collect, store, or transmit any user data. All processing happens locally within Figma. No external servers or third-party services are used.
+
+-------------------------------------------
+PRIVACY POLICY (if required)
+-------------------------------------------
+Icon Set Generator does not collect, store, or process any personal data or user information. The plugin operates entirely within the Figma environment using the official Figma Plugin API. No data is sent to external servers or third parties.
+
+-------------------------------------------
+CHECKLIST BEFORE SUBMITTING
+-------------------------------------------
+✅ Two-factor authentication enabled on Figma account
+✅ Plugin icon created (128×128 PNG)
+✅ Thumbnail image created (1920×1080 PNG)
+✅ Generated Figma plugin ID and updated manifest.json
+✅ Tested plugin for bugs and crashes
+✅ Using Figma Desktop App (not browser)
+✅ Ready to submit!
+
+===========================================
+END OF COPY
+===========================================

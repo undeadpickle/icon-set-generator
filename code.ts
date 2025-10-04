@@ -124,6 +124,12 @@ function createSingleComponentSet(
   // Remove fills from component set
   componentSet.fills = [];
 
+  // Add purple dashed stroke border to component set
+  componentSet.strokes = [{ type: 'SOLID', color: figma.util.rgb("#7B61FF") }];
+  componentSet.strokeWeight = 1;
+  componentSet.strokeAlign = "INSIDE";
+  componentSet.dashPattern = [10, 5];
+
   return componentSet;
 }
 
